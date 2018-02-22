@@ -1,0 +1,88 @@
+package fr.vdm.soclejee.log.manager;
+
+import java.io.Serializable;
+
+import javax.interceptor.AroundInvoke;
+import javax.interceptor.Interceptor;
+import javax.interceptor.InvocationContext;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+@SuppressWarnings("serial")
+@Logged
+@Interceptor
+public class LogManager implements Serializable {
+
+	public LogManager() {
+		super();
+	}
+
+	@AroundInvoke
+	public Object aroundInvoke(final InvocationContext context) throws Exception {
+
+		final Logger logger = LoggerFactory.getLogger(context.getTarget().getClass());
+		final String prefix = context.getMethod().getName();
+
+		Object result = null;
+		long executionTime = 0;
+		long startTime = 0;
+
+		try {
+			if (logger.isInfoEnabled())
+				logger.info(prefix, " - start");
+			/**
+			 * If debug is enabled we log method parameters values
+			 */
+			if (logger.isDebugEnabled()) {
+				String debugMessage = createDebugMessage(context, prefix);
+
+				logger.debug(debugMessage);
+
+				startTime = System.currentTimeMillis();
+
+				result = context.proceed();
+
+				logger.debug(prefix + " - result: " + result);
+
+			} else {
+				/**
+				 * If debug is not enabled
+				 */
+				result = context.proceed();
+			}
+		} catch (final Exception e) {
+			throw e;
+		} finally {
+			if (logger.isDebugEnabled()) {
+				executionTime = (System.currentTimeMillis() - startTime);
+
+				logger.debug(prefix + " - end " + executionTime + "ms");
+			}
+		}
+
+		return result;
+	}
+
+	private String createDebugMessage(final InvocationContext context, final String prefix) {
+		StringBuffer debugMessage = new StringBuffer(prefix + " - parameters: {");
+
+		for (int i = 0; i < context.getMethod().getParameterTypes().length; i++) {
+			debugMessage.append("(");
+			debugMessage.append(context.getMethod().getParameterTypes()[i]);
+			debugMessage.append(") ");
+			debugMessage.append(context.getParameters()[i]);
+
+			if (i + 1 < context.getMethod().getParameterTypes().length) {
+				debugMessage.append(", ");
+			}
+		}
+
+		if (context.getMethod().getParameterTypes().length == 0) {
+			debugMessage.append("none");
+		}
+
+		debugMessage.append("}");
+		return debugMessage.toString();
+	}
+}

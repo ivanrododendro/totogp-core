@@ -1,0 +1,37 @@
+package fr.vdm.soclejee.exception.manager;
+
+import java.io.Serializable;
+
+import javax.interceptor.AroundInvoke;
+import javax.interceptor.Interceptor;
+import javax.interceptor.InvocationContext;
+
+import fr.vdm.soclejee.exception.BaseException;
+import fr.vdm.soclejee.exception.ExceptionManager;
+import fr.vdm.soclejee.presentation.JsfMessageUtils;
+
+@SuppressWarnings("serial")
+@PresentationExceptionManaged
+@Interceptor
+public class PresentationExceptionInterceptor extends ExceptionManager implements Serializable {
+
+	@AroundInvoke
+	public Object aroundInvoke(final InvocationContext context) throws Exception {
+		Object result = null;
+
+		try {
+			result = context.proceed();
+		} catch (Exception e) {
+			Exception wrappedException = manageException(context, e);
+
+			// si effectivement on n'a pas pu extraire une excpetion de base on la
+			// propage
+			if (wrappedException instanceof BaseException)
+				JsfMessageUtils.addMessageFromException((BaseException) wrappedException, null, null);
+			else
+				throw wrappedException;
+		}
+
+		return result;
+	}
+}

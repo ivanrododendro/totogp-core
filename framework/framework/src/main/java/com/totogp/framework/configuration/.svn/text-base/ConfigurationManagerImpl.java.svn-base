@@ -1,0 +1,360 @@
+package fr.vdm.soclejee.configuration;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
+import javax.ejb.SessionContext;
+import javax.ejb.Timeout;
+import javax.ejb.Timer;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.Unmarshaller;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import fr.vdm.soclejee.configuration.model.generated.ConfigurationType;
+import fr.vdm.soclejee.configuration.model.generated.FileDefinitionType;
+import fr.vdm.soclejee.configuration.model.generated.PropertyDefinitionType;
+import fr.vdm.soclejee.exception.TechnicalException;
+
+public abstract class ConfigurationManagerImpl implements ConfigurationManager {
+	private static final String TIMER_ID = "CONFIGURATION_FILE_REFRESH_TIMER";
+	private static final String CONFIGURATION_AUTO_REFRESH_INTERVAL = "configuration.autoRefreshInterval";
+
+	private final Logger logger = LoggerFactory.getLogger(ConfigurationManagerImpl.class);
+
+	private ConfigurationType configurationDef;
+	private Integer autoRefreshInterval = 30000;
+	private long lastModifiedConfiguration;
+
+	private JAXBContext jaxbContext;
+	private Unmarshaller unmarshaller;
+
+	private Map<String, Object> propertyMap = new HashMap<String, Object>();
+
+	private boolean initialised = false;
+
+	protected SessionContext context;
+	protected String configurationFilename;
+	protected String configurationDefFilename;
+
+	private File configurationDefFile;
+	private File configurationFile;
+
+	@Override
+	public Map<String, Object> getConfigurationMap() {
+		return propertyMap;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * fr.vdm.soclejee.configuration.ConfigurationManager#getFloatValue(java.lang
+	 * .String, java.lang.Float)
+	 */
+	@Override
+	public Float getFloatValue(String propertyName) {
+		return (Float) propertyMap.get(propertyName);
+	}
+
+	public Integer getIntegerValue(String propertyName) {
+		return (Integer) propertyMap.get(propertyName);
+	}
+
+	private PropertyDefinitionType getPropertyDefinition(String propertyName) {
+		for (PropertyDefinitionType tmp : configurationDef.getPropertyDefinition()) {
+			if (tmp.getName().equals(propertyName))
+				return tmp;
+		}
+
+		return null;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * fr.vdm.soclejee.configuration.ConfigurationManager#getStringValue(java.
+	 * lang.String, java.lang.String)
+	 */
+	@Override
+	public String getStringValue(String propertyName) {
+		return (String) propertyMap.get(propertyName);
+	}
+
+	protected abstract void initFilenames();
+
+	@SuppressWarnings("unchecked")
+	private void loadCondfigurationDef() {
+		FileInputStream fileInputStream = null;
+
+		try {
+			if (configurationFilename == null || configurationFilename.equals(""))
+				throw new RuntimeException(
+				    "attribut configurationFilename n'est pas positionné, gestion de configuration non disponible");
+
+			if (configurationDefFilename == null || configurationDefFilename.equals(""))
+				throw new RuntimeException(
+				    "attribut configurationDefFilename n'est pas positionné, gestion de configuration non disponible");
+
+			configurationDefFile = new File(configurationDefFilename);
+			configurationFile = new File(configurationFilename);
+
+			if (!configurationDefFile.exists() || !configurationDefFile.isFile())
+				throw new TechnicalException("le fichier :" + configurationFilename + " n'existe pas"
+				    + ", gestion de configuration non disponible");
+
+			if (!configurationFile.exists() || !configurationFile.isFile())
+				throw new TechnicalException("le fichier :" + configurationDefFilename + " n'existe pas"
+				    + ", gestion de configuration non disponible");
+
+			String packageName = ConfigurationType.class.getPackage().getName();
+			jaxbContext = JAXBContext.newInstance(packageName);
+			unmarshaller = jaxbContext.createUnmarshaller();
+
+			fileInputStream = new FileInputStream(configurationDefFile);
+			this.configurationDef = ((JAXBElement<ConfigurationType>) unmarshaller
+			    .unmarshal(fileInputStream)).getValue();
+		} catch (Exception e) {
+			throw new TechnicalException(
+			    "erreur pendant le chargement du fichier de definition de la configuration "
+			        + configurationDefFilename, e);
+		} finally {
+			try {
+				fileInputStream.close();
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+			}
+		}
+	}
+
+	private void loadConfiguration(boolean firstTimeLoad) {
+		FileInputStream inStream = null;
+		Map<String, Object> tmpPropertyMap = new HashMap<String, Object>();
+
+		try {
+			if (firstTimeLoad || configurationFile.lastModified() != lastModifiedConfiguration) {
+
+				if (!firstTimeLoad)
+					logger.info("Le fichier de configuration : " + configurationFilename + " a été modifié");
+
+				inStream = new FileInputStream(configurationFile);
+				Properties properties = new Properties();
+				properties.load(inStream);
+
+				lastModifiedConfiguration = configurationFile.lastModified();
+
+				for (PropertyDefinitionType propertyDefinition : configurationDef.getPropertyDefinition()) {
+					String name = propertyDefinition.getName();
+					String value = properties.getProperty(name);
+					String javaType = propertyDefinition.getJavaType().value();
+
+					parseConfigurationItem(tmpPropertyMap, name, value, propertyDefinition, javaType);
+				}
+
+				propertyMap = tmpPropertyMap;
+
+				updateAutoRefreshInterval(tmpPropertyMap);
+
+				for (String key : propertyMap.keySet()) {
+					logger.info(key + " : " + propertyMap.get(key));
+				}
+
+				logger.info(CONFIGURATION_AUTO_REFRESH_INTERVAL + " : " + autoRefreshInterval);
+			}
+		} catch (Exception e) {
+			if (initialised)
+				logger.error("la configuration n'a pas été modifiée", e);
+			else
+				logger.error("la configuration n'a pas été chargée", e);
+		} finally {
+			try {
+				if (inStream != null)
+					inStream.close();
+			} catch (IOException e) {
+				logger.error(e.getMessage(), e);
+			}
+		}
+	}
+
+	private void parseConfigurationItem(Map<String, Object> tmpPropertyMap, String key_,
+	    String value, PropertyDefinitionType propertyDef, String javaType) throws IOException {
+		if (propertyDef == null)
+			throw new TechnicalException("la propriété " + key_ + " n'a pas été définie");
+
+		if (StringUtils.isEmpty(value))
+			value = propertyDef.getDefaultValue();
+
+		if (StringUtils.isEmpty(value))
+			throw new TechnicalException("la propriété " + key_ + " doit être renseignée");
+
+		if (javaType.equals(String.class.getName()))
+			tmpPropertyMap.put(key_, value);
+		else if (javaType.equals(Integer.class.getName()))
+			tmpPropertyMap.put(key_, Integer.parseInt(value));
+		else if (javaType.equals(Float.class.getName()))
+			tmpPropertyMap.put(key_, Float.parseFloat(value));
+		else if (javaType.equals(File.class.getName())) {
+			FileDefinitionType filePropertyDef = (FileDefinitionType) propertyDef;
+
+			File f = new File(value);
+
+			if (!f.exists() && filePropertyDef.isMustExists())
+				throw new TechnicalException("le fichier " + value + " n'existe pas");
+
+			if ((f.isDirectory() != filePropertyDef.isIsDirectory()) && f.exists())
+				throw new TechnicalException(key_ + " la nature repertoire/fichier est incorrecte");
+
+			if (!f.exists() && filePropertyDef.isIsDirectory() && filePropertyDef.isCreateIfNotExists())
+				f.mkdir();
+		}
+	}
+
+	public void postConstruct() {
+		initFilenames();
+
+		loadCondfigurationDef();
+
+		synchronized (this) {
+			loadConfiguration(true);
+		}
+
+		setRefreshTimer();
+
+		initialised = true;
+	}
+
+	private void saveConfiguration() {
+		synchronized (this) {
+			FileOutputStream fileOutputStream = null;
+			SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+
+			try {
+				fileOutputStream = new FileOutputStream(configurationFile);
+
+				Properties properties = new Properties();
+
+				for (String key : propertyMap.keySet()) {
+					properties.put(key, propertyMap.get(key).toString());
+				}
+
+				properties.store(fileOutputStream, "mise à jour par " + this.getClass() + ", le "
+				    + dateFormat.format(new Date()));
+
+			} catch (Exception e) {
+				throw new TechnicalException("Erreur pendant l'écriture du fichier de configuration : "
+				    + configurationFilename, e);
+			} finally {
+				if (fileOutputStream != null)
+					try {
+						fileOutputStream.close();
+					} catch (IOException e) {
+						logger.error("", e);
+					}
+			}
+		}
+	}
+
+	public void setConfiguration(ConfigurationType configuration) {
+		this.configurationDef = configuration;
+	}
+
+	public abstract void setContext(SessionContext context);
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * fr.vdm.soclejee.configuration.ConfigurationManager#setFloatValue(java.lang
+	 * .String, java.lang.String)
+	 */
+	@Override
+	public void setFloatValue(String propertyName, String value) {
+		setObjectValue(propertyName, value);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * fr.vdm.soclejee.configuration.ConfigurationManager#setIntegerValue(java
+	 * .lang.String, java.lang.String)
+	 */
+	@Override
+	public void setIntegerValue(String propertyName, String value) {
+		setObjectValue(propertyName, value);
+	}
+
+	private void setObjectValue(String propertyName, String value) {
+		synchronized (this) {
+			PropertyDefinitionType propertyDef = getPropertyDefinition(propertyName);
+			HashMap<String, Object> tmpPropertyMap = new HashMap<String, Object>();
+
+			if (propertyDef == null)
+				throw new TechnicalException("la propriété " + propertyName
+				    + "n'existe pas dans le fichier de configuration : " + configurationFilename);
+
+			try {
+				loadConfiguration(false);
+
+				parseConfigurationItem(tmpPropertyMap, propertyName, value, propertyDef, propertyDef
+				    .getJavaType().value());
+
+				propertyMap.remove(propertyName);
+				propertyMap.putAll(tmpPropertyMap);
+
+				saveConfiguration();
+			} catch (Exception e) {
+				throw new TechnicalException(e);
+			}
+		}
+	}
+
+	private void setRefreshTimer() {
+		for (final Object timer : context.getTimerService().getTimers()) {
+			if (((Timer) timer).getInfo().equals(TIMER_ID)) {
+				((Timer) timer).cancel();
+			}
+		}
+
+		context.getTimerService().createTimer(new Date(), autoRefreshInterval, TIMER_ID);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * fr.vdm.soclejee.configuration.ConfigurationManager#setStringValue(java.
+	 * lang.String, java.lang.String)
+	 */
+	@Override
+	public void setStringValue(String propertyName, String value) {
+		setObjectValue(propertyName, value);
+	}
+
+	@Timeout
+	public void timeout(Timer timer) {
+		synchronized (this) {
+			loadConfiguration(false);
+		}
+	}
+
+	private void updateAutoRefreshInterval(Map<String, Object> tmpPropertyMap) {
+		Integer autoRefreshInterval = (Integer) tmpPropertyMap.get(CONFIGURATION_AUTO_REFRESH_INTERVAL);
+
+		if (autoRefreshInterval != null && this.autoRefreshInterval != autoRefreshInterval) {
+			this.autoRefreshInterval = autoRefreshInterval;
+			setRefreshTimer();
+		}
+	}
+}

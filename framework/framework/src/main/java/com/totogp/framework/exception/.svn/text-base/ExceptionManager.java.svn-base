@@ -1,0 +1,113 @@
+package fr.vdm.soclejee.exception;
+
+import javax.interceptor.InvocationContext;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class ExceptionManager {
+
+	protected Logger thisLogger = LoggerFactory.getLogger(this.getClass());
+
+	public Exception manageException(final InvocationContext context, final Exception e) {
+		Exception exceptionToThrow;
+
+		exceptionToThrow = getWrappedException(e, false);
+
+		logException(context, exceptionToThrow);
+
+		return exceptionToThrow;
+	}
+
+	public BaseException manageException(final Exception e) {
+		Exception exceptionToThrow = getWrappedException(e, true);
+
+		logException(exceptionToThrow);
+
+		return (BaseException) exceptionToThrow;
+	}	
+
+	protected Exception getWrappedException(Exception e, boolean wrapUnknownNotRuntime) {
+		Exception exceptionToThrow = null;
+
+		if (e instanceof BaseException) {
+			exceptionToThrow = e;
+		} else if (e instanceof RuntimeException) {
+			exceptionToThrow = new TechnicalException(e);
+		} else {
+
+			if (!wrapUnknownNotRuntime)
+				exceptionToThrow = e;
+			else
+				exceptionToThrow = new TechnicalException(e);
+		}
+
+		return exceptionToThrow;
+	}
+
+	protected void logException(InvocationContext context, Exception e) {
+		final Logger targetLogger = LoggerFactory.getLogger(context.getTarget().getClass());
+
+		if (e instanceof TechnicalException) {
+			TechnicalException socleException = (TechnicalException) e;
+
+			if (socleException.isLogged())
+				return;
+
+			targetLogger.error("an exception (" + socleException.getUuid()
+			    + ") occured while executing method " + context.getMethod().getName(),
+			    socleException.getCause() == null ? socleException : socleException.getCause());
+
+			socleException.setLogged(true);
+		} else if (e instanceof BusinessException) {
+			BusinessException socleException = (BusinessException) e;
+
+			if (socleException.isLogged())
+				return;
+
+			targetLogger.debug("an application error occured : " + socleException.getMessage() + " ("
+			    + socleException.getUuid() + ") " + " while executing method " + context.getMethod());
+
+			socleException.setLogged(true);
+
+		} else {
+			thisLogger
+			    .warn("a non runtime exception not extending SocleBusinessException was detected : "
+			        + e.getClass().getCanonicalName() + ", please correct");
+
+			targetLogger.error("an exception occured while executing method "
+			    + context.getMethod().getName(), e);
+		}
+	}
+
+	protected void logException(Exception e) {
+		if (e instanceof TechnicalException) {
+			TechnicalException socleException = (TechnicalException) e;
+
+			if (socleException.isLogged())
+				return;
+
+			thisLogger.error("an exception (" + socleException.getUuid() + ") occured",
+			    socleException.getCause());
+
+			socleException.setLogged(true);
+		} else if (e instanceof BusinessException) {
+			BusinessException socleException = (BusinessException) e;
+
+			if (socleException.isLogged())
+				return;
+
+			thisLogger.debug("an application error occured : " + socleException.getMessage() + " ("
+			    + socleException.getUuid() + ") ");
+
+			socleException.setLogged(true);
+
+		} else {
+			thisLogger
+			    .warn("a non runtime exception not extending SocleBusinessException was detected : "
+			        + e.getClass().getCanonicalName() + ", please correct");
+
+			thisLogger.error("an exception occured", e);
+		}
+	}
+}

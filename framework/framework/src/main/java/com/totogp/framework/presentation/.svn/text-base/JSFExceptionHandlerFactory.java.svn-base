@@ -1,0 +1,18 @@
+package fr.vdm.soclejee.presentation;
+
+import javax.faces.context.ExceptionHandler;
+
+public class JSFExceptionHandlerFactory extends javax.faces.context.ExceptionHandlerFactory {
+
+	private final javax.faces.context.ExceptionHandlerFactory parent;
+
+	public JSFExceptionHandlerFactory(final javax.faces.context.ExceptionHandlerFactory parent) {
+		this.parent = parent;
+	}
+
+	@Override
+	public ExceptionHandler getExceptionHandler() {
+		return new JSFExceptionHandler(this.parent.getExceptionHandler());
+	}
+
+}

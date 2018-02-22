@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn-default/svn/tma_vdm_soclejeesvn/!svn/ver/21/soclejee/src/main/java/fr/vdm/soclejee/configuration
+END
+ConfigurationManager.java
+K 25
+svn:wc:ra_dav:version-url
+V 126
+/svn-default/svn/tma_vdm_soclejeesvn/!svn/ver/6/soclejee/src/main/java/fr/vdm/soclejee/configuration/ConfigurationManager.java
+END
+ConfigurationManagerImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn-default/svn/tma_vdm_soclejeesvn/!svn/ver/28/soclejee/src/main/java/fr/vdm/soclejee/configuration/ConfigurationManagerImpl.java
+END
+ConfigurationRestFacade.java
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn-default/svn/tma_vdm_soclejeesvn/!svn/ver/6/soclejee/src/main/java/fr/vdm/soclejee/configuration/ConfigurationRestFacade.java
+END

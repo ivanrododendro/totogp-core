@@ -1,0 +1,18 @@
+package fr.vdm.soclejee.configuration;
+
+import java.util.Map;
+
+public interface ConfigurationManager {
+
+	public void setStringValue(String propertyName, String value);
+
+	public void setFloatValue(String propertyName, String value);
+
+	public void setIntegerValue(String propertyName, String value);
+
+	public String getStringValue(String propertyName);
+
+	public Float getFloatValue(String propertyName);
+
+	public Map<String, Object> getConfigurationMap();
+}
