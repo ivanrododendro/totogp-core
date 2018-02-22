@@ -1,0 +1,45 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.totogp</groupId>
+		<artifactId>totogp-parent</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>totogp-core</artifactId>
+
+	<name>desktop-app Maven Webapp</name>
+
+	<build>
+		<finalName>totogp-core</finalName>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.sun.jersey/jersey-server -->
+<!-- 		<dependency> -->
+<!-- 		    <groupId>com.sun.jersey</groupId> -->
+<!-- 		    <artifactId>jersey-server</artifactId> -->
+<!-- 		</dependency> -->
+
+		<dependency>
+			<groupId>com.totogp</groupId>
+			<artifactId>framework</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>javax</groupId>
+			<artifactId>javaee-api</artifactId>
+		</dependency>
+
+	</dependencies>
+
+	<packaging>war</packaging>
+</project>

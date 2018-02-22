@@ -1,0 +1,15 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" xmlns:totogp="http://java.sun.com/jsf/composite/totogp">
+	<p:outputLabel styleClass="red FS30">How the podium is going to be composed ?</p:outputLabel>
+	<h:panelGrid columns="2" border="0" style="margin-bottom:20px; margin-top: 20px;" cellpadding="5" columnClasses="Wid40, Wid60"
+		styleClass="Wid100">
+		<p:outputLabel styleClass="TexAlRight">First place</p:outputLabel>
+		<totogp:driver-selector selectedValue="#{betUI.podiumBetForm.firstRider}" />
+
+		<p:outputLabel>Second place</p:outputLabel>
+		<totogp:driver-selector selectedValue="#{betUI.podiumBetForm.secondRider}" />
+
+		<p:outputLabel>Third place</p:outputLabel>
+		<totogp:driver-selector selectedValue="#{betUI.podiumBetForm.thirdRider}" />
+	</h:panelGrid>
+</ui:composition>

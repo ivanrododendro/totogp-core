@@ -1,0 +1,32 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+		<div class="Container100 Responsive100">
+			<div class="ContainerIndent">
+				<div class="ShadowBox TexAlCenter whiteback RedBorderedBox" style="height: 400px">
+					<h:form>
+						<h:panelGrid columns="1" style="width : 100%; border:0; " styleClass="TexAlCenter">
+						
+							<ui:fragment rendered="#{betUI.currentBetType == 'pole_bet'}">
+								<ui:include src="../fragment/pole-bet.xhtml" />
+							</ui:fragment>
+							<ui:fragment rendered="#{betUI.currentBetType == 'winner_bet'}">
+								<ui:include src="../fragment/winner-bet.xhtml" />
+							</ui:fragment>
+							<ui:fragment rendered="#{betUI.currentBetType == 'podium_bet'}">
+								<ui:include src="../fragment/podium-bet.xhtml" />
+							</ui:fragment>
+							<ui:fragment rendered="#{betUI.currentBetType == 'winner_blind_bet'}">
+								<ui:include src="../fragment/winner-blind-bet.xhtml" />
+							</ui:fragment>
+							
+							<p:commandButton value="Bet!" actionListener="#{betUI.placeBet}" style="width: 200px;" styleClass="Fs40"/>
+
+						</h:panelGrid>
+					</h:form>
+				</div>
+			</div>
+		</div>
+	</ui:define>
+</ui:composition>

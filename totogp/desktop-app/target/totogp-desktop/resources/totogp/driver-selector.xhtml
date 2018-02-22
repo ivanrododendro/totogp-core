@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:composite="http://java.sun.com/jsf/composite" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<composite:interface>
+	<!-- Needs to be in a form tag -->
+	<composite:attribute name="selectedValue" />
+</composite:interface>
+
+<composite:implementation>
+	<p:selectOneMenu id="advanced" value="#{cc.attrs.selectedValue}" var="r" converter="omnifaces.SelectItemsConverter">
+		<f:selectItems value="#{betUI.riders}" var="rider" itemLabel="#{rider.firstname} #{rider.lastname} #{rider.number}"
+			itemValue="#{rider}" />
+
+		<p:column>
+			<p:graphicImage url="#{r.pictureUrl}" height="100px"/>
+		</p:column>
+
+		<p:column>
+				#{r.firstname} #{r.lastname} #{r.number}
+		</p:column>
+	</p:selectOneMenu>
+
+</composite:implementation>
+
+</html>

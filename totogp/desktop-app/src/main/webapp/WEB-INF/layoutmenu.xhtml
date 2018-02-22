@@ -1,0 +1,17 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" xmlns:pr="http://primefaces.org/ronin">
+
+	<div id="layout-menu-cover">
+		<ui:include src="topbar.xhtml" />
+		<h:form id="menuform">
+<!-- 			<p:panelGrid columns="1" style="align: center;"> -->
+<!-- 				<p:commandButton value="Basic" type="button" onclick="PF('bet-dialog').show();" icon="fa fa-trophy" rendered="#{betUI.haveToBet}"/> -->
+<!-- 			</p:panelGrid> -->
+
+		<p:menu>
+		<p:menuitem value="Bet" rendered="#{betUI.haveToBet}" outcome="/view/bet-panel"/>
+		</p:menu>
+		</h:form>
+	</div>
+
+</ui:composition>
