@@ -55,7 +55,7 @@
 			</dependency>
 			<dependency>
 				<groupId>com.totogp</groupId>
-				<artifactId>framework</artifactId>
+				<artifactId>totogp-framework</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 
