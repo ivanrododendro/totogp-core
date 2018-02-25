@@ -7,24 +7,26 @@ import javax.persistence.LockModeType;
 
 public interface DAO<T, PK> extends Serializable {
 
-  public T find(PK key);
+	public T find(PK key);
 
-  public List<T> findAll();
+	public List<T> findAll();
 
-  public T getSingleResult(String queryName, final Object... params);
+	public T getSingleResult(String queryName, final Object... params);
 
-  public T make();
+	public T make();
 
-  public T merge(T arg0);
+	public T merge(T arg0);
 
-  public T persist(T entity);
+	public T persist(T entity);
 
-  public void refresh(T entity);
+	public void refresh(T entity);
 
-  public void refresh(T entity, LockModeType arg1);
+	public void refresh(T entity, LockModeType arg1);
 
-  public void remove(T entity);
+	public void remove(T entity);
 
-  public List<T> runQuery(String queryName, final Object... params);
+	public List<T> runQuery(String queryName, final Object... params);
+
+	public T unproxy(T proxied);
 
 }
