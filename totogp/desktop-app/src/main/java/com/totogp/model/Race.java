@@ -23,10 +23,10 @@ public class Race {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @OneToOne(fetch = FetchType.EAGER)
+  @OneToOne(fetch = FetchType.LAZY)
   private Circuit circuit;
 
-  @OneToOne(fetch = FetchType.EAGER)
+  @OneToOne(fetch = FetchType.LAZY)
   private Championship championship;
 
   @Column(name = "championship_rece_url", nullable = true, length = 255)
@@ -38,7 +38,7 @@ public class Race {
   @Column(name = "date", nullable = false)
   private Date date;
 
-  @OneToMany(fetch = FetchType.EAGER)
+  @OneToMany(fetch = FetchType.LAZY)
   private Set<RaceEvent> receEvents;
 
   @Override

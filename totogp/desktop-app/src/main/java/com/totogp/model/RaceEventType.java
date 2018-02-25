@@ -19,7 +19,7 @@ public class RaceEventType {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @OneToOne(fetch = FetchType.EAGER)
+  @OneToOne(fetch = FetchType.LAZY)
   private Championship championship;
 
   @Column(name = "name", nullable = false, length = 3)

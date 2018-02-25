@@ -21,7 +21,7 @@ public class Regulation {
   @Column(name = "name", nullable = false, length = 255)
   private String name;
 
-  @OneToOne(fetch = FetchType.EAGER)
+  @OneToOne(fetch = FetchType.LAZY)
   private Country registrationCountry;
 
   @Column(name = "public_url", nullable = true, length = 255)

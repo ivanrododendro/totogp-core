@@ -10,13 +10,13 @@ import javax.persistence.ManyToOne;
 @DiscriminatorValue(value = Bet.PODIUM_BET)
 public class PodiumBet extends Bet {
 
-  @ManyToOne(fetch = FetchType.EAGER)
+  @ManyToOne(fetch = FetchType.LAZY)
   private Rider first;
 
-  @ManyToOne(fetch = FetchType.EAGER)
+  @ManyToOne(fetch = FetchType.LAZY)
   private Rider second;
 
-  @ManyToOne(fetch = FetchType.EAGER)
+  @ManyToOne(fetch = FetchType.LAZY)
   private Rider third;
 
   @Column(name = "is_first_winning", nullable = true)

@@ -10,7 +10,7 @@ import javax.persistence.OneToOne;
 @Entity
 @DiscriminatorValue(value = Bet.WINNER_BET)
 public class WinnerBet extends Bet {
-  @OneToOne(fetch = FetchType.EAGER)
+  @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "winner_rider_id", foreignKey = @ForeignKey(name = "FK_BET_WINNER_RIDER") )
   private Rider winner;
 

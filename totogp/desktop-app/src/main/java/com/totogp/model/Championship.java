@@ -26,7 +26,7 @@ public class Championship {
   @Column(name = "homepage", nullable = true, length = 255)
   private String homepage;
 
-  @OneToMany(fetch = FetchType.EAGER, mappedBy = "championship")
+  @OneToMany(fetch = FetchType.LAZY, mappedBy = "championship")
   private Set<Race> races;
 
   @Override

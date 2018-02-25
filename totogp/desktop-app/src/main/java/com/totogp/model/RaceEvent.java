@@ -22,13 +22,13 @@ public class RaceEvent {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @OneToOne(fetch = FetchType.EAGER)
+  @OneToOne(fetch = FetchType.LAZY)
   private RaceEventType type;
 
   @Column(name = "date", nullable = false)
   private Date date;
 
-  @ManyToOne(fetch = FetchType.EAGER)
+  @ManyToOne(fetch = FetchType.LAZY)
   private Race race;
 
   public Date getDate() {

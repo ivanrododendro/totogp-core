@@ -24,16 +24,16 @@ public class Contest {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @OneToOne(fetch = FetchType.EAGER)
+  @OneToOne(fetch = FetchType.LAZY)
   private Championship championship;
 
-  @OneToOne(fetch = FetchType.EAGER)
+  @OneToOne(fetch = FetchType.LAZY)
   private Regulation regulation;
 
   @Column(name = "year", nullable = false)
   private Integer year;
 
-  @OneToOne(fetch = FetchType.EAGER)
+  @OneToOne(fetch = FetchType.LAZY)
   private Race currentRace;
 
   @Column(name = "current_bet_type", nullable = false)

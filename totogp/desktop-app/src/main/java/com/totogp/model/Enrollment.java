@@ -29,10 +29,10 @@ public class Enrollment {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int id;
 
-  @OneToOne(fetch = FetchType.EAGER)
+  @OneToOne(fetch = FetchType.LAZY)
   private Contest contest;
 
-  @ManyToOne(fetch = FetchType.EAGER)
+  @ManyToOne(fetch = FetchType.LAZY)
   private User user;
 
   @OneToMany(mappedBy = "enrollment", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)

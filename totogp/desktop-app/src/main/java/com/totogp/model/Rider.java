@@ -40,7 +40,7 @@ public class Rider {
   @Column(name = "picture_url", nullable = true, length = 255)
   private String pictureUrl;
 
-  @OneToOne(fetch = FetchType.EAGER)
+  @OneToOne(fetch = FetchType.LAZY)
   private Country country;
 
   @Column(name = "number", nullable = false)

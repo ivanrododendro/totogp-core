@@ -8,7 +8,7 @@ import javax.persistence.OneToOne;
 @Entity
 @DiscriminatorValue(value = Bet.POLE_BET)
 public class PoleBet extends Bet {
-  @OneToOne(fetch = FetchType.EAGER)
+  @OneToOne(fetch = FetchType.LAZY)
   private Rider poleman;
 
   public Rider getPoleman() {

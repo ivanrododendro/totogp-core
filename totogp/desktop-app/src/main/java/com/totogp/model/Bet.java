@@ -41,7 +41,7 @@ public class Bet {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @OneToOne(fetch = FetchType.EAGER)
+  @OneToOne(fetch = FetchType.LAZY)
   private Enrollment enrollment;
 
   @Column(name = "bet_date", nullable = false)
@@ -53,7 +53,7 @@ public class Bet {
   @Column(name = "is_winning", nullable = true)
   private Boolean isWinning;
 
-  @OneToOne(fetch = FetchType.EAGER)
+  @OneToOne(fetch = FetchType.LAZY)
   private Race race;
 
   @Column(name = "points", nullable = true)

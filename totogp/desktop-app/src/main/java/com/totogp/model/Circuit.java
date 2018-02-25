@@ -21,7 +21,7 @@ public class Circuit {
   @Column(name = "name", length = 255, nullable = false, unique = true)
   private String name;
 
-  @OneToOne(fetch = FetchType.EAGER)
+  @OneToOne(fetch = FetchType.LAZY)
   private Country country;
 
   @Column(name = "wikipedia_url", length = 255, nullable = true)
