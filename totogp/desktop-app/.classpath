@@ -28,6 +28,5 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/Volumes/Data/Downloads/ronin-layout-2/ronin-theme-2.0.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

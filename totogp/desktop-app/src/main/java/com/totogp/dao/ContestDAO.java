@@ -18,7 +18,7 @@ public class ContestDAO extends DAOAbstractImpl<Contest, Long> {
       final Integer year,
       final Race race,
       final Championship championship) {
-    final Query query = em.createNamedQuery(Contest.GET_CURRENT_BET_TYPE);
+    final Query query = em.createNamedQuery(Contest.GET_BY_REGULATION_YEAR_RACEID_CHAMPID);
 
     query.setParameter("regulationId", regulation.getId());
     query.setParameter("year", year);

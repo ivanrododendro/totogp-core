@@ -6,17 +6,18 @@ import java.util.List;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.totogp.dao.ContestDAO;
 import com.totogp.framework.exception.BusinessException;
 import com.totogp.framework.exception.TechnicalException;
 import com.totogp.framework.persistence.DAO;
 import com.totogp.model.Bet;
-import com.totogp.model.Championship;
 import com.totogp.model.Enrollment;
 import com.totogp.model.PodiumBet;
 import com.totogp.model.PoleBet;
 import com.totogp.model.Race;
-import com.totogp.model.Regulation;
 import com.totogp.model.Result;
 import com.totogp.model.ResultType;
 import com.totogp.model.Rider;
@@ -25,6 +26,8 @@ import com.totogp.model.WinnerBlindBet;
 
 @Stateless
 public class BetBusiness {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(BetBusiness.class);
 
 	@Inject
 	private DAO<Bet, Long> betDao;
@@ -163,9 +166,10 @@ public class BetBusiness {
 		throw new TechnicalException("WinnerBlindBet not managaed yet!");
 	}
 
-	public String getCurrentBetType(final Regulation regulation, final Integer year, final Race currentRace,
-			final Championship championship) {
-		return contestDAO.getCurrentBetType(regulation, year, currentRace, championship);
+	public String getCurrentBetType(Enrollment enrollment) {
+		enrollment = enrrollmentDAO.find(enrollment.getId());
+
+		return enrollment.getContest().getCurrentBetType();
 	}
 
 	public void placePodiumBet(final Enrollment enrollment, final Race race, final Rider firstRider,
@@ -206,8 +210,7 @@ public class BetBusiness {
 		betDao.persist(bet);
 	}
 
-	public void placeWinnerBet(final Enrollment enrollment, final Race race, final Rider winnerRider)
-			throws BusinessException {
+	public void placeWinnerBet(final Enrollment enrollment, final Rider winnerRider) throws BusinessException {
 
 		// if (!userCanBet(enrollment, Bet.WINNER_BET))
 		// throw new BusinessException("user.alreadybet");
@@ -218,32 +221,35 @@ public class BetBusiness {
 		bet.setEnrollment(enrollment);
 		bet.setIsWinning(false);
 		bet.setWinner(winnerRider);
-		bet.setRace(race);
-		bet.setType(Bet.POLE_BET);
+		bet.setRace(enrollment.getContest().getCurrentRace());
+		bet.setType(Bet.WINNER_BET);
 
 		betDao.persist(bet);
 	}
 
-	public void placeWinnerBlindBet(final Enrollment enrollment, final Race race, final Rider winnerBlindRider)
-			throws BusinessException {
-
-		// if (!userCanBet(enrollment, Bet.WINNER_BET))
-		// throw new BusinessException("user.alreadybet");
-
-		final WinnerBet bet = new WinnerBet();
-
-		bet.setBetDate(new Date());
-		bet.setEnrollment(enrollment);
-		bet.setIsWinning(false);
-		bet.setWinner(winnerBlindRider);
-		bet.setRace(race);
-		bet.setType(Bet.WINNER_BLIND_BET);
-
-		betDao.persist(bet);
-	}
+	// public void placeWinnerBlindBet(final Enrollment enrollment, final Race race,
+	// final Rider winnerBlindRider)
+	// throws BusinessException {
+	//
+	// // if (!userCanBet(enrollment, Bet.WINNER_BET))
+	// // throw new BusinessException("user.alreadybet");
+	//
+	// final WinnerBet bet = new WinnerBet();
+	//
+	// bet.setBetDate(new Date());
+	// bet.setEnrollment(enrollment);
+	// bet.setIsWinning(false);
+	// bet.setWinner(winnerBlindRider);
+	// bet.setRace(race);
+	// bet.setType(Bet.WINNER_BLIND_BET);
+	//
+	// betDao.persist(bet);
+	// }
 
 	public Boolean userCanBet(Enrollment enrollment) {
 		enrollment = enrrollmentDAO.find(enrollment.getId());
+
+		LOGGER.info("open : " + enrollment.getContest().getOpen());
 
 		return enrollment.getContest().getOpen();
 	}

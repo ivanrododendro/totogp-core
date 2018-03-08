@@ -3,14 +3,15 @@ package com.totogp.application;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Response;
 
-import com.totogp.application.dto.HasToBetRQ;
 import com.totogp.application.dto.LoginMessageRP;
 import com.totogp.application.dto.LoginMessageRQ;
+import com.totogp.application.dto.UserCanBetRP;
 import com.totogp.application.mapper.LoginMessageMapper;
 import com.totogp.business.BetBusiness;
 import com.totogp.business.UserBusiness;
@@ -21,10 +22,9 @@ import com.totogp.model.Enrollment;
 import com.totogp.model.User;
 
 @Path("/user")
-@Consumes({ "application/json" })
 @Produces({ "application/json" })
 @Stateless
-public class UserFacade {
+public class UserFacade extends RestFacade {
 
 	@EJB
 	private UserBusiness userBusiness;
@@ -60,13 +60,13 @@ public class UserFacade {
 		return userBusiness.registerNew(newUser);
 	}
 
-	@POST
-	@Path("canBet")
-	public Boolean userCanBet(HasToBetRQ request) {
+	@GET
+	@javax.ws.rs.Path("{id}/canBet")
+	public Response userCanBet(@javax.ws.rs.PathParam("id") String id) {
 		Enrollment enrollment = new Enrollment();
-		enrollment.setId(request.getEnrollmentId());
+		enrollment.setId(Integer.parseInt(id));
 
-		return betBusiness.userCanBet(enrollment);
+		return Response.ok(new UserCanBetRP(betBusiness.userCanBet(enrollment)))
+				.header("Access-Control-Allow-Origin", "*").build();
 	}
-
 }

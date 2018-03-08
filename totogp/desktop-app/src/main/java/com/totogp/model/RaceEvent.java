@@ -16,50 +16,54 @@ import javax.persistence.UniqueConstraint;
 
 @Entity
 @Cacheable(value = true)
-@Table(name = "race_event", uniqueConstraints = @UniqueConstraint(columnNames = { "race_id", "type_id" }) )
+@Table(name = "race_event", uniqueConstraints = @UniqueConstraint(columnNames = { "race_id", "type_id" }))
+/*
+ * ça répresente un evenement de la course, Q1, Q2, WUP..
+ * 
+ */
 public class RaceEvent {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-  @OneToOne(fetch = FetchType.LAZY)
-  private RaceEventType type;
+	@OneToOne(fetch = FetchType.LAZY)
+	private RaceEventType type;
 
-  @Column(name = "date", nullable = false)
-  private Date date;
+	@Column(name = "date", nullable = false)
+	private Date date;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  private Race race;
+	@ManyToOne(fetch = FetchType.LAZY)
+	private Race race;
 
-  public Date getDate() {
-    return date;
-  }
+	public Date getDate() {
+		return date;
+	}
 
-  public Long getId() {
-    return id;
-  }
+	public Long getId() {
+		return id;
+	}
 
-  public Race getRace() {
-    return race;
-  }
+	public Race getRace() {
+		return race;
+	}
 
-  public RaceEventType getType() {
-    return type;
-  }
+	public RaceEventType getType() {
+		return type;
+	}
 
-  public void setDate(final Date date) {
-    this.date = date;
-  }
+	public void setDate(final Date date) {
+		this.date = date;
+	}
 
-  public void setId(final Long id) {
-    this.id = id;
-  }
+	public void setId(final Long id) {
+		this.id = id;
+	}
 
-  public void setRace(final Race race) {
-    this.race = race;
-  }
+	public void setRace(final Race race) {
+		this.race = race;
+	}
 
-  public void setType(final RaceEventType type) {
-    this.type = type;
-  }
+	public void setType(final RaceEventType type) {
+		this.type = type;
+	}
 }
