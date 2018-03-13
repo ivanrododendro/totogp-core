@@ -1,57 +1,96 @@
 package com.totogp.application.dto;
 
 public class LoginMessageRP {
-	private String firstname;
+	private Long contestId;
 
-	@Override
-	public String toString() {
-		return "LoginMessageRP [firstname=" + firstname + ", lastname=" + lastname + ", email=" + email
-				+ ", enrollmentId=" + enrollmentId + ", userId=" + userId + "]";
+	public Long getContestId() {
+		return contestId;
+	}
+
+	public void setContestId(Long contestId) {
+		this.contestId = contestId;
+	}
+
+	public Integer getPoints() {
+		return points;
+	}
+
+	public void setPoints(Integer points) {
+		this.points = points;
+	}
+
+	public String getContestLabel() {
+		return contestLabel;
+	}
+
+	public void setContestLabel(String contestLabel) {
+		this.contestLabel = contestLabel;
+	}
+
+	private String email;
+	private Integer enrollmentId;
+	private String firstname;
+	private String lastname;
+	private Integer points;
+	private Long userId;
+	private String contestLabel;
+	private Integer ranking;
+	private String raceLabel;
+
+	public String getRaceLabel() {
+		return raceLabel;
+	}
+
+	public void setRaceLabel(String raceLabel) {
+		this.raceLabel = raceLabel;
+	}
+
+	public Integer getRanking() {
+		return ranking;
+	}
+
+	public void setRanking(Integer ranking) {
+		this.ranking = ranking;
 	}
 
 	public LoginMessageRP() {
 		super();
 	}
 
-	private String lastname;
-	private String email;
-	private Long enrollmentId;
-	private Long userId;
+	public String getEmail() {
+		return email;
+	}
+
+	public Integer getEnrollmentId() {
+		return enrollmentId;
+	}
 
 	public String getFirstname() {
 		return firstname;
-	}
-
-	public void setFirstname(String firstname) {
-		this.firstname = firstname;
 	}
 
 	public String getLastname() {
 		return lastname;
 	}
 
-	public void setLastname(String lastname) {
-		this.lastname = lastname;
-	}
-
-	public String getEmail() {
-		return email;
+	public Long getUserId() {
+		return userId;
 	}
 
 	public void setEmail(String email) {
 		this.email = email;
 	}
 
-	public Long getEnrollmentId() {
-		return enrollmentId;
-	}
-
-	public void setEnrollmentId(Long enrollmentId) {
+	public void setEnrollmentId(Integer enrollmentId) {
 		this.enrollmentId = enrollmentId;
 	}
 
-	public Long getUserId() {
-		return userId;
+	public void setFirstname(String firstname) {
+		this.firstname = firstname;
+	}
+
+	public void setLastname(String lastname) {
+		this.lastname = lastname;
 	}
 
 	public void setUserId(Long userId) {

@@ -22,7 +22,7 @@ public class Rider {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private Integer id;
 
 	@Column(name = "firstname", nullable = true, length = 30)
 	private String firstname;
@@ -85,7 +85,7 @@ public class Rider {
 		return firstname;
 	}
 
-	public Long getId() {
+	public Integer getId() {
 		return id;
 	}
 
@@ -134,7 +134,7 @@ public class Rider {
 		this.firstname = firstname;
 	}
 
-	public void setId(final Long id) {
+	public void setId(final Integer id) {
 		this.id = id;
 	}
 

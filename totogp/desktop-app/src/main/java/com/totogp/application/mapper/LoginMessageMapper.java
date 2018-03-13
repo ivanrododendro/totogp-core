@@ -13,5 +13,5 @@ public interface LoginMessageMapper {
 	LoginMessageMapper INSTANCE = Mappers.getMapper(LoginMessageMapper.class);
 
 	@Mappings({ @Mapping(source = "user.id", target = "userId") })
-	LoginMessageRP carToCarDto(User user);
+	LoginMessageRP carToLoginDto(User user);
 }

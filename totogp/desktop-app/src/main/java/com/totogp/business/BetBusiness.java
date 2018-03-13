@@ -253,4 +253,13 @@ public class BetBusiness {
 
 		return enrollment.getContest().getOpen();
 	}
+
+	public Bet getCurrentBet(int enrollmentId) {
+		Enrollment enrollment = enrrollmentDAO.find(enrollmentId);
+
+		if (enrollment == null)
+			return null;
+
+		return betDao.getSingleResult(Bet.GET_BY_ENRID_TYPE, enrollmentId, enrollment.getContest().getCurrentBetType());
+	}
 }

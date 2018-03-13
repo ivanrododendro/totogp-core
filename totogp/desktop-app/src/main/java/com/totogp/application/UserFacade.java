@@ -3,6 +3,7 @@ package com.totogp.application;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -10,9 +11,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 import com.totogp.application.dto.LoginMessageRP;
-import com.totogp.application.dto.LoginMessageRQ;
 import com.totogp.application.dto.UserCanBetRP;
-import com.totogp.application.mapper.LoginMessageMapper;
 import com.totogp.business.BetBusiness;
 import com.totogp.business.UserBusiness;
 import com.totogp.dao.UserDAO;
@@ -49,11 +48,29 @@ public class UserFacade extends RestFacade {
 
 	@POST
 	@Path("login")
-	public LoginMessageRP login(LoginMessageRQ message) throws BusinessException {
+	public Response login(@FormParam("username") String username, @FormParam("password") String password)
+			throws BusinessException {
 		// User user = userBusiness.login(mailAdress, password);
-		User user = userDAO.getSingleResult(User.GET_BY_EMAIL, message.getEmail());
+		User user = userDAO.getSingleResult(User.GET_BY_EMAIL, username);
 
-		return LoginMessageMapper.INSTANCE.carToCarDto(user);
+		if (user == null)
+			throw new BusinessException("user.auth.failed");
+
+		LoginMessageRP response = new LoginMessageRP();
+
+		Enrollment firstEnrollment = user.getEnrollments().iterator().next();
+
+		response.setEmail(user.getEmail());
+		response.setFirstname(user.getFirstname());
+		response.setLastname(user.getLastname());
+		response.setPoints(firstEnrollment.getPoints().intValue());
+		response.setEnrollmentId(firstEnrollment.getId());
+		response.setContestId(firstEnrollment.getContest().getId());
+		response.setContestLabel("TotoGP " + firstEnrollment.getContest().getYear());
+		response.setRaceLabel(firstEnrollment.getContest().getCurrentRace().getCircuit().getName());
+		response.setRanking(-1);
+
+		return Response.ok(response).header("Access-Control-Allow-Origin", "*").build();
 	}
 
 	public User registerNew(final User newUser) {

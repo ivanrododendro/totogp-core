@@ -22,12 +22,12 @@ import javax.persistence.UniqueConstraint;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "type")
 @NamedQueries(value = {
-		@NamedQuery(name = Bet.GET_BY_CURRENT_BET, query = "select b from Bet b where b.enrollment = ?1 and b.type = ?2"),
+		@NamedQuery(name = Bet.GET_BY_ENRID_TYPE, query = "select b from Bet b where b.enrollment.id = ?1 and b.type = ?2"),
 		@NamedQuery(name = Bet.GET_UNCOMPUTED, query = "select b from Bet b where b.isWinning is null") })
 public class Bet {
 	public static final String GET_UNCOMPUTED = "Bet.GET_UNCOMPUTED";
 
-	public static final String GET_BY_CURRENT_BET = "Bet.GET_BY_CURRENT_BET";
+	public static final String GET_BY_ENRID_TYPE = "Bet.GET_BY_CURRENT_BET";
 
 	public static final String PODIUM_BET = "podium_bet";
 

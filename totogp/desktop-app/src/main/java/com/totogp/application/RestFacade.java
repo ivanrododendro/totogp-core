@@ -4,7 +4,7 @@ import javax.ws.rs.OPTIONS;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
-public class RestFacade {
+public abstract class RestFacade {
 
 	@OPTIONS
 	@Path("{path:.*}")
@@ -12,7 +12,7 @@ public class RestFacade {
 		Response r = Response.ok().header("Access-Control-Allow-Origin", "*")
 				.header("Access-Control-Allow-Headers", "origin, content-type, accept, authorization")
 				.header("Access-Control-Allow-Methods", "GET").build();
-	
+
 		return r;
 	}
 

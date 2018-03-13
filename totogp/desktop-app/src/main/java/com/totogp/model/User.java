@@ -28,9 +28,7 @@ import javax.validation.constraints.Pattern;
 public class User implements Serializable {
 
 	public static final String GET_BY_ACTIVATION_TOKEN = "User.GET_BY_ACTIVATION_TOKEN";
-
 	public static final String GET_BY_EMAIL_PASSWORD = "User.GET_BY_EMAIL_PASSWORD";
-
 	public static final String GET_BY_EMAIL = "User.GET_BY_EMAIL";
 
 	@Id
